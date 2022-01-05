@@ -1,30 +1,42 @@
 import React, { useRef, useEffect } from 'react';
+import { BallMovement } from './BallMovement';
+import WallCollision from './utils/WallCollision';
+import data from '../../data';
+import Paddle from './Paddle';
+let { ballObj, paddleProps } = data;
 
-let x = 0;
-const Board = () => {
+export default function Board() {
   const canvasRef = useRef(null);
 
   useEffect(() => {
     const render = () => {
       const canvas = canvasRef.current;
-      const context = canvas.getContext('2d');
-      context.clearRect(0, 0, canvas.width, canvas.heigth);
-      context.beginPath();
-      context.fillStyle = 'red';
-      context.arc(x, 50, 20, 0, 2 * Math.PI);
-      context.strokeStyle = 'black';
-      context.strokeWidth = 4;
-      context.fill();
-      context.stroke();
-      x++;
+      const ctx = canvas.getContext('2d');
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      //handle ball movement
+      BallMovement(ctx, ballObj);
+
+      //ball and wall collision
+      WallCollision(ballObj, canvas);
+
+      Paddle(ctx, canvas, paddleProps);
+
       requestAnimationFrame(render);
     };
     render();
   }, []);
 
   return (
-    <canvas ref={canvasRef} id="canvas" height="500px" width="800px"></canvas>
+    <canvas
+      ref={canvasRef}
+      id="canvas"
+      onMouseMove={(event) =>
+        (paddleProps.x = event.clientX - paddleProps.width / 2 - 10)
+      }
+      height="500"
+      width={window.innerWidth - 20}
+    ></canvas>
   );
-};
-
-export default Board;
+}
