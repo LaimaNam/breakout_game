@@ -3,7 +3,10 @@ import { BallMovement } from './BallMovement';
 import WallCollision from './utils/WallCollision';
 import data from '../../data';
 import Paddle from './Paddle';
-let { ballObj, paddleProps } = data;
+import Brick from './Brick';
+
+let bricks = [];
+let { ballObj, paddleProps, brickObj } = data;
 
 export default function Board() {
   const canvasRef = useRef(null);
@@ -13,7 +16,19 @@ export default function Board() {
       const canvas = canvasRef.current;
       const ctx = canvas.getContext('2d');
 
+      //assign bricks
+      let newBrickSet = Brick(2, bricks, canvas, brickObj);
+
+      if (newBrickSet && newBrickSet.length > 0) {
+        bricks = newBrickSet;
+      }
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      //display bricks
+      bricks.map((brick) => {
+        return brick.draw(ctx);
+      });
 
       //handle ball movement
       BallMovement(ctx, ballObj);
